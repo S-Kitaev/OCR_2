@@ -5,7 +5,6 @@ import easyocr
 def images_to_text(image_dir='backend/script/temp/img', text_file='text.txt'):
 
     reader = easyocr.Reader(['ru', 'en'],
-                            gpu=False,
                             model_storage_directory='backend/script/models',
                             download_enabled=False
                             )
