@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ```
 4. Запустите скрипт:
 ```bash
-python converter.py
+python images2text.py
 ```
 5. Введите путь до вашего PDF файла:
 Путь до файла: ```C:\Users\Имя\Documents\документ.pdf```
