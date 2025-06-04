@@ -1,14 +1,11 @@
 import shutil
 import os
 import easyocr
-from pdf2images import pdf_to_images
-import datetime
-
 
 def process_images():
-    folder = 'img'
+    folder = 'backend/script/cache/img'
     output_file = 'text.txt'
-    reader = easyocr.Reader(['ru', 'en'], gpu=False, model_storage_directory='./models', download_enabled=False)
+    reader = easyocr.Reader(['ru', 'en'], gpu=False, model_storage_directory='backend/script/models', download_enabled=False)
 
     if not os.path.exists(folder):
         print(f'Папка {folder} не найдена!')
@@ -31,17 +28,3 @@ def process_images():
 
     shutil.rmtree(folder)
     print(f"Готово! Расшифровка сохранена в {output_file}")
-
-def main():
-    pdf_path = input("Введите путь к PDF-файлу: ").strip()
-    start = datetime.datetime.now()
-    if not os.path.exists(pdf_path):
-        print("Файл не найден.")
-        return
-    pdf_to_images(pdf_path)
-    process_images()
-    end = datetime.datetime.now()
-    print("Время выполнения программы: ",end - start)
-
-if __name__ == "__main__":
-    main()

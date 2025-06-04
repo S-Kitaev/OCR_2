@@ -3,7 +3,7 @@ import numpy as np
 import fitz
 import os
 
-output_folder = "img"
+output_folder = "backend/script/cache/img"
 
 def pdf_to_images(pdf_path):
     pdf_document = fitz.open(pdf_path)
