@@ -39,7 +39,7 @@ def recognize():
     for pdf_path in pdf_files:
         file_name = os.path.basename(pdf_path)
         file_name = file_name[:-4]
-        print(file_name)
+        print("Обрабатывается файл:",file_name)
         try:
             image_dir = os.path.join(temp_dir, f"images_{file_name}")
             os.makedirs(image_dir, exist_ok=True)
@@ -50,7 +50,7 @@ def recognize():
             shutil.rmtree(image_dir)
 
         except Exception as e:
-            print("\n")
+            print("Ошибка:", e, "\n")
 
     # Удаляем временную директорию
     shutil.rmtree(temp_dir)

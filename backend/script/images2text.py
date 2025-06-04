@@ -2,13 +2,13 @@ import shutil
 import os
 import easyocr
 
-def images_to_text(image_dir='backend/script/temp/img', text_file='text.txt'):
+def images_to_text(image_dir, text_file):
 
-    reader = easyocr.Reader(['ru', 'en'],
-                            model_storage_directory='backend/script/models',
-                            download_enabled=False
-                            )
-
+    reader = easyocr.Reader(
+        ['ru', 'en'],
+        model_storage_directory='backend/script/models',
+        download_enabled=False,
+    )
 
     files = sorted(os.listdir(image_dir))  # чтобы страницы были по порядку
 
@@ -27,3 +27,4 @@ def images_to_text(image_dir='backend/script/temp/img', text_file='text.txt'):
 
     shutil.rmtree(image_dir)
     print(f"Готово! Расшифровка сохранена в {text_file}")
+
