@@ -8,7 +8,8 @@ custom_characters = (
     '!@#$%^&*()_+-=[]{};:,./?|`~ '
 )
 
-def images_to_text(image_dir, text_file):
+def images_to_text(image_dir, text_file, log_callback=print):
+    log_callback("Перевод изображений в текст...")
     reader = easyocr.Reader(
         ['ru', 'en'],
         model_storage_directory='backend/script/models',
@@ -21,6 +22,7 @@ def images_to_text(image_dir, text_file):
 
     with open(text_file, 'w', encoding='utf-8') as f:
         for idx, fname in enumerate(files, 1):
+            log_callback(f"Расшифровывается страница {idx}")
             path = os.path.join(image_dir, fname)
             if not os.path.isfile(path): continue
 
@@ -33,6 +35,7 @@ def images_to_text(image_dir, text_file):
             )
 
             # Записываем в .txt
+            log_callback(f"Запись страницы {idx} в .txt")
             f.write(f"--- Страница {idx} ---\n")
             for line in result:
                 f.write(line + "\n")
@@ -41,7 +44,7 @@ def images_to_text(image_dir, text_file):
             all_lines.extend(result)
 
     shutil.rmtree(image_dir)
-    print(f"[✓] Расшифровка сохранена в {text_file}")
+    log_callback(f"[✓] Расшифровка изображений сохранена в {text_file}")
 
     # Возвращаем единый текст
     return "\n".join(all_lines)

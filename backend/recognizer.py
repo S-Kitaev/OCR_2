@@ -2,9 +2,9 @@ import os, zipfile, datetime, shutil, glob, pandas as pd
 from backend.script.pdf2images import pdf_to_images
 from backend.script.images2text import images_to_text
 
-def recognize(zip_path):
+def recognize(zip_path: str, log_callback=print):
     if not os.path.exists(zip_path):
-        print("ZIP-архив не найден."); return
+        log_callback("ZIP-архив не найден."); return
 
     start = datetime.datetime.now()
     temp_dir = os.path.abspath("backend/script/temp")
@@ -21,21 +21,28 @@ def recognize(zip_path):
 
     pdf_files = glob.glob(os.path.join(temp_dir, '**', '*.pdf'), recursive=True)
     if not pdf_files:
-        print("В ZIP-архиве не обнаружено ни одного PDF."); return
+        log_callback("В ZIP-архиве не обнаружено ни одного PDF."); return
 
-    print("Найденные PDF-файлы:", pdf_files)
+    pdf_names = []
+    for pdf in pdf_files:
+        pdf_name = os.path.basename(pdf)
+        pdf_names.append(pdf_name)
+
+    pdf_files_string = "\n".join(pdf_names)
+
+    log_callback(f"Найденные PDF-файлы: \n{pdf_files_string}")
 
     records = []  # будет список dict'ов {filename: ..., text: ...}
 
     for pdf_path in pdf_files:
         name = os.path.splitext(os.path.basename(pdf_path))[0]
-        print(f"→ Обработка {name}...")
+        log_callback(f"\n Обработка {name}...")
         try:
             image_dir = os.path.join(temp_dir, f"images_{name}")
             os.makedirs(image_dir, exist_ok=True)
-            pdf_to_images(pdf_path, image_dir)
+            pdf_to_images(pdf_path, image_dir, log_callback=log_callback)
             text_file = os.path.join(output_dir, f"{name}.txt")
-            full_text = images_to_text(image_dir, text_file)
+            full_text = images_to_text(image_dir, text_file, log_callback=log_callback)
 
             records.append({
                 'filename': name,
@@ -43,7 +50,7 @@ def recognize(zip_path):
             })
 
         except Exception as e:
-            print(f"Ошибка при обработке {name}:", e)
+            log_callback(f"Ошибка при обработке {name}: {e}")
 
     # Удаляем temp
     shutil.rmtree(temp_dir)
@@ -53,8 +60,9 @@ def recognize(zip_path):
     df.to_excel(excel, index=False, sheet_name='Temporary')
 
     end = datetime.datetime.now()
-    print(f"\nОбработано файлов: {len(records)}")
-    print(f"Время выполнения: {end - start}")
-    print(f"Текстовые файлы сохранены в папке: {output_dir}")
+    log_callback(f"\nОбработано файлов: {len(records)}")
+    log_callback(f"Время выполнения: {end - start}")
+    log_callback(f"Текстовые файлы сохранены в папке: {output_dir}")
+    log_callback(f"Excel сохранен в: {excel}")
 
     return df

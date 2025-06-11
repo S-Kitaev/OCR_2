@@ -3,7 +3,7 @@ import numpy as np
 import fitz
 import os
 
-def pdf_to_images(pdf_path, image_dir):
+def pdf_to_images(pdf_path, image_dir, log_callback=print):
 
     pdf_document = fitz.open(pdf_path)
 
@@ -11,6 +11,7 @@ def pdf_to_images(pdf_path, image_dir):
         os.makedirs(image_dir)
 
     for page_number in range(len(pdf_document)):
+        log_callback(f"Обрабатывается страница PDF {page_number + 1} из {len(pdf_document)}")
         page = pdf_document.load_page(page_number)
         pix = page.get_pixmap(dpi=300)
 
@@ -23,5 +24,7 @@ def pdf_to_images(pdf_path, image_dir):
 
         image_path = os.path.join(image_dir, f"page_{page_number + 1}.png")
         cv2.imwrite(image_path, image)
+
+    log_callback("Изображения страниц созданы")
 
     pdf_document.close()

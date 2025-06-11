@@ -1,24 +1,55 @@
+<!-- frontend/templates/form.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Обработка ZIP-архивов</title>
-    <link rel="stylesheet" href="frontend/css/style.css">
+  <title>OCR в реальном времени</title>
+  <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Обработчик ZIP-архивов</h1>
-        <form action="/process" method="post">
-            <div class="form-group">
-                <label for="zip_path">Путь к ZIP-файлу:</label>
-                <input
-                    type="text"
-                    id="zip_path"
-                    name="zip_path"
-                    placeholder="C:\path\to\file.zip или /home/user/file.zip"
-                    required>
-            </div>
-            <button type="submit">Запустить обработку</button>
-        </form>
-    </div>
+  <div class="container">
+    <h1>Обработка ZIP-архивов</h1>
+    <form id="zipForm">
+      <label for="zip_path">Путь к ZIP-файлу:</label>
+      <input type="text" id="zip_path" name="zip_path" required>
+      <button type="submit">Запустить</button>
+    </form>
+
+    <h2>Лог:</h2>
+    <pre id="logOutput"></pre>
+  </div>
+
+  <script>
+    const logOutput = document.getElementById('logOutput');
+    const form = document.getElementById('zipForm');
+
+    let source;  // здесь будет EventSource
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // если уже есть старый SSE — закрываем его
+      if (source) {
+        source.close();
+        logOutput.textContent = '';
+      }
+
+      // открываем SSE-поток _до_ fetch
+      source = new EventSource('/logs');
+      source.onmessage = (evt) => {
+        logOutput.textContent += evt.data + "\n";
+        // если нужно, можно detect "Обработка завершена" и закрыть SSE:
+        if (evt.data.includes("Обработка завершена")) {
+          source.close();
+        }
+      };
+
+      // только после этого шлём ZIP-путь
+      const formData = new URLSearchParams(new FormData(form));
+      await fetch('/process', {
+        method: 'POST',
+        body: formData
+      });
+    });
+  </script>
 </body>
 </html>
