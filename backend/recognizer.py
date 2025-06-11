@@ -1,61 +1,59 @@
-import os
-import zipfile
-import datetime
-import shutil
-from backend.script.images2text import images_to_text
+import os, zipfile, datetime, shutil, glob, pandas as pd
 from backend.script.pdf2images import pdf_to_images
-
+from backend.script.images2text import images_to_text
 
 def recognize():
-    # Запрашиваем путь к ZIP-архиву
     zip_path = input("Введите путь к ZIP-архиву: ").strip()
-    start = datetime.datetime.now()
-
     if not os.path.exists(zip_path):
-        print("ZIP-архив не найден.")
-        return
+        print("ZIP-архив не найден."); return
 
-    # Создаем временные рабочие папки
-    temp_dir = "backend/script/temp"
-    output_dir = "texts"
+    start = datetime.datetime.now()
+    temp_dir = os.path.abspath("backend/script/temp")
+    output_dir = os.path.abspath("texts")
+    excel = os.path.abspath("Результат обработки.xlsx")
 
-    # Очищаем/создаем рабочие директории
+    # подготовка папок
     shutil.rmtree(temp_dir, ignore_errors=True)
     os.makedirs(temp_dir, exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Распаковываем архив
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(temp_dir)
 
-    # Собираем все PDF-файлы
-    pdf_files = []
-    for root, dirs, files in os.walk(temp_dir):
-        for file in files:
-            if file.lower().endswith('.pdf'):
-                pdf_files.append(os.path.join(root, file))
+    pdf_files = glob.glob(os.path.join(temp_dir, '**', '*.pdf'), recursive=True)
+    if not pdf_files:
+        print("В ZIP-архиве не обнаружено ни одного PDF."); return
 
-    # Обрабатываем каждый PDF-файл
+    print("Найденные PDF-файлы:", pdf_files)
+
+    records = []  # будет список dict'ов {filename: ..., text: ...}
+
     for pdf_path in pdf_files:
-        file_name = os.path.basename(pdf_path)
-        file_name = file_name[:-4]
-        print("Обрабатывается файл:",file_name)
+        name = os.path.splitext(os.path.basename(pdf_path))[0]
+        print(f"→ Обработка {name}...")
         try:
-            image_dir = os.path.join(temp_dir, f"images_{file_name}")
+            image_dir = os.path.join(temp_dir, f"images_{name}")
             os.makedirs(image_dir, exist_ok=True)
-
-            output_text = os.path.join(output_dir, f"{file_name}.txt")
             pdf_to_images(pdf_path, image_dir)
-            images_to_text(image_dir, output_text)
-            shutil.rmtree(image_dir)
+            text_file = os.path.join(output_dir, f"{name}.txt")
+            full_text = images_to_text(image_dir, text_file)
+
+            records.append({
+                'filename': name,
+                'text': full_text
+            })
 
         except Exception as e:
-            print("Ошибка:", e, "\n")
+            print(f"Ошибка при обработке {name}:", e)
 
-    # Удаляем временную директорию
+    # Удаляем temp
     shutil.rmtree(temp_dir)
 
+    # Строим DataFrame: каждая строка = файл, 2 колонки
+    df = pd.DataFrame(records, columns=['filename', 'text'])
+    df.to_excel(excel, index=False, sheet_name='Temporary')
+
     end = datetime.datetime.now()
-    print(f"\nОбработано файлов: {len(pdf_files)}")
-    print(f"Время выполнения программы: {end - start}")
-    print(f"Текстовые файлы сохранены в папку: {output_dir}")
+    print(f"\nОбработано файлов: {len(records)}")
+    print(f"Время выполнения: {end - start}")
+    print(f"Текстовые файлы сохранены в папке: {output_dir}")
