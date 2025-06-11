@@ -2,8 +2,7 @@ import os, zipfile, datetime, shutil, glob, pandas as pd
 from backend.script.pdf2images import pdf_to_images
 from backend.script.images2text import images_to_text
 
-def recognize():
-    zip_path = input("Введите путь к ZIP-архиву: ").strip()
+def recognize(zip_path):
     if not os.path.exists(zip_path):
         print("ZIP-архив не найден."); return
 
@@ -57,3 +56,5 @@ def recognize():
     print(f"\nОбработано файлов: {len(records)}")
     print(f"Время выполнения: {end - start}")
     print(f"Текстовые файлы сохранены в папке: {output_dir}")
+
+    return df

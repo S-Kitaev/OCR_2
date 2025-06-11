@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Обработка ZIP-архивов</title>
+    <link rel="stylesheet" href="frontend/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Обработчик ZIP-архивов</h1>
+        <form action="/process" method="post">
+            <div class="form-group">
+                <label for="zip_path">Путь к ZIP-файлу:</label>
+                <input
+                    type="text"
+                    id="zip_path"
+                    name="zip_path"
+                    placeholder="C:\path\to\file.zip или /home/user/file.zip"
+                    required>
+            </div>
+            <button type="submit">Запустить обработку</button>
+        </form>
+    </div>
+</body>
+</html>
