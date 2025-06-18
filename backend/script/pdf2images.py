@@ -2,10 +2,18 @@ import cv2
 import numpy as np
 import fitz
 import os
+from pathlib import Path
 
 def pdf_to_images(pdf_path, image_dir, log_callback=print):
 
     pdf_document = fitz.open(pdf_path)
+
+    log_callback(f"[pdf2images] Рабочая папка: {Path.cwd()}")
+    log_callback(f"[pdf2images] Пытаюсь создать: {image_dir}")
+    os.makedirs(image_dir, exist_ok=True)
+    if not os.access(image_dir, os.W_OK):
+        log_callback(f"‼ Нет прав на запись в {image_dir}")
+        return
 
     if not os.path.exists(image_dir):
         os.makedirs(image_dir)
@@ -23,7 +31,11 @@ def pdf_to_images(pdf_path, image_dir, log_callback=print):
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         image_path = os.path.join(image_dir, f"page_{page_number + 1}.png")
-        cv2.imwrite(image_path, image)
+        ok = cv2.imwrite(image_path, image)
+        if not ok:
+            log_callback(f"‼ cv2.imwrite НЕ УДАЛОСЬ сохранить {image_path}")
+        else:
+            log_callback(f"✔ Сохранил {image_path}")
 
     log_callback("Изображения страниц созданы")
 

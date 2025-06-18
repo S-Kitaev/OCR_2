@@ -9,6 +9,8 @@ custom_characters = (
 )
 
 def images_to_text(image_dir, text_file, log_callback=print):
+    log_callback(f"[images2text] Проверяю папку: {image_dir}")
+    log_callback("Файлы в ней: " + ", ".join(os.listdir(image_dir)))
     log_callback("Перевод изображений в текст...")
     reader = easyocr.Reader(
         ['ru', 'en'],

@@ -1,15 +1,24 @@
-import os, zipfile, datetime, shutil, glob, pandas as pd
+import os
+import zipfile
+import datetime
+import shutil
+import glob
+import pandas as pd
 from backend.script.pdf2images import pdf_to_images
 from backend.script.images2text import images_to_text
+from pathlib import Path
 
 def recognize(zip_path: str, log_callback=print):
     if not os.path.exists(zip_path):
         log_callback("ZIP-архив не найден."); return
 
     start = datetime.datetime.now()
-    temp_dir = os.path.abspath("backend/script/temp")
-    output_dir = os.path.abspath("texts")
-    excel = os.path.abspath("Результат обработки.xlsx")
+    from pathlib import Path
+    BASE = Path(__file__).resolve().parent.parent
+
+    temp_dir = BASE / "backend" / "script" / "temp"
+    output_dir = BASE / "texts"
+    excel = BASE / "Результат обработки.xlsx"
 
     # подготовка папок
     shutil.rmtree(temp_dir, ignore_errors=True)
