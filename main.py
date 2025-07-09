@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from sse_starlette.sse import EventSourceResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
+from datetime import datetime
 from backend.recognizer import recognize
 
 app = FastAPI()
@@ -47,7 +47,10 @@ async def get_logs():
 def run_recognize(zip_path: str):
     try:
         # внутрь recognize передаём колбэк для логирования
+        time_start = datetime.now()
         recognize(zip_path, log_callback=logs.append)
+        time_end = datetime.now()
+        logs.append(f"Обработка заняла {(time_end - time_start) / 60 } минут")
         logs.append("✔ Обработка завершена.")
     except Exception as e:
         logs.append(f"‼ Ошибка: {e}")
