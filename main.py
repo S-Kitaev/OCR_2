@@ -1,11 +1,9 @@
-# main.py
 import asyncio
 from fastapi import FastAPI, Request, Form, BackgroundTasks
 from fastapi.responses import HTMLResponse
 from sse_starlette.sse import EventSourceResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 from backend.recognizer import recognize
 
 app = FastAPI()

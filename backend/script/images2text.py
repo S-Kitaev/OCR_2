@@ -1,4 +1,6 @@
 import shutil, os, easyocr
+import numpy as  np
+from PIL import Image
 
 custom_characters = (
     '«»№'
@@ -26,10 +28,16 @@ def images_to_text(image_dir, text_file, log_callback=print):
         for idx, fname in enumerate(files, 1):
             log_callback(f"Расшифровывается страница {idx}")
             path = os.path.join(image_dir, fname)
-            if not os.path.isfile(path): continue
+
+            if not os.path.isfile(path):
+                print("Нет такого файла")
+                continue
+
+            img = Image.open(path)
+            img = np.array(img)
 
             result = reader.readtext(
-                path,
+                img,
                 detail=0,
                 allowlist=custom_characters,
                 contrast_ths=0.05,

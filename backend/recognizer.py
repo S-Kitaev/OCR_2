@@ -73,5 +73,3 @@ def recognize(zip_path: str, log_callback=print):
     log_callback(f"Время выполнения: {end - start}")
     log_callback(f"Текстовые файлы сохранены в папке: {output_dir}")
     log_callback(f"Excel сохранен в: {excel}")
-
-    return df
