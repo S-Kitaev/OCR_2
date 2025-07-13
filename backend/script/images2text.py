@@ -40,14 +40,11 @@ def images_to_text(image_dir, text_file, log_callback=print):
             log_callback(f"Запись страницы {idx} в .txt")
             f.write(f"--- Страница {idx} ---\n")
             for line in result:
-                f.write(line + "\n")
+                f.write(line.lower() + "\n")
             f.write("\n")
 
             all_lines.extend(result)
 
     shutil.rmtree(image_dir)
     log_callback(f"[✓] Расшифровка изображений сохранена в {text_file}")
-
-    # Возвращаем единый текст
-    return "\n".join(all_lines)
 

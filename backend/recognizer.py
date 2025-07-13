@@ -6,6 +6,7 @@ import glob
 import pandas as pd
 from backend.script.pdf2images import pdf_to_images
 from backend.script.images2text import images_to_text
+from backend.text_handler import parse_bank_guarantee
 from pathlib import Path
 
 def recognize(zip_path: str, log_callback=print):
@@ -43,7 +44,7 @@ def recognize(zip_path: str, log_callback=print):
 
     records = []  # будет список dict'ов {filename: ..., text: ...}
 
-    for pdf_path in pdf_files:
+    for i, pdf_path in enumerate(pdf_files):
         name = os.path.splitext(os.path.basename(pdf_path))[0]
         log_callback(f"\n Обработка {name}...")
         try:
@@ -51,22 +52,21 @@ def recognize(zip_path: str, log_callback=print):
             os.makedirs(image_dir, exist_ok=True)
             pdf_to_images(pdf_path, image_dir, log_callback=log_callback)
             text_file = os.path.join(output_dir, f"{name}.txt")
-            full_text = images_to_text(image_dir, text_file, log_callback=log_callback)
-
-            records.append({
-                'filename': name,
-                'text': full_text
-            })
+            images_to_text(image_dir, text_file, log_callback=log_callback)
+            row_cells = parse_bank_guarantee(text_file)
+            log_callback(row_cells)
+            records.append(row_cells)
 
         except Exception as e:
             log_callback(f"Ошибка при обработке {name}: {e}")
 
     # Удаляем temp
     shutil.rmtree(temp_dir)
+    columns = ['№ Основного договора', 'Дата подписания основного договора', 'ИНН', 'БИК', 'Вид гарантии', 'Принципал', '№ Гарантии', 'ДОП / ИЗМ', 'Дата подписания', 'Дата начала', 'Дата окончания', 'Сумма', 'Валюта']
 
     # Строим DataFrame: каждая строка = файл, 2 колонки
-    df = pd.DataFrame(records, columns=['filename', 'text'])
-    df.to_excel(excel, index=False, sheet_name='Temporary')
+    df = pd.DataFrame(records, columns=columns, index=pdf_names)
+    df.to_excel(excel, index=False, sheet_name='Main')
 
     end = datetime.datetime.now()
     log_callback(f"\nОбработано файлов: {len(records)}")
