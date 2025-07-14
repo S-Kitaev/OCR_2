@@ -37,8 +37,8 @@ uvicorn main:app --reload --port 8000
 http://127.0.0.1:8000
 ```
 Откроется данная страница:
-![image](<img width="1876" height="1021" alt="image" src="https://github.com/user-attachments/assets/a4b06887-a147-4cdb-980f-b655189a051e" />
-)
+<img width="1876" height="1021" alt="image" src="https://github.com/user-attachments/assets/a4b06887-a147-4cdb-980f-b655189a051e" />
+
 
 6. В область слева загружается zip файл. После успешной загружки нажимается кнопка "Запустить обработку".
 7. После обработки файла, кнопка "Скачать excel" станет зеленой, после чего можно скачать файл с результатми обработки в формате excel на компьютер.
