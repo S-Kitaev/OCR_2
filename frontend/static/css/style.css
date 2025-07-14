@@ -1,0 +1,160 @@
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.container {
+  display: flex;
+  gap: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+  height: calc(100vh - 40px);
+}
+
+.panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  overflow: hidden;
+}
+
+.left-panel {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-panel {
+  flex: 7;
+  display: flex;
+  flex-direction: column;
+}
+
+.drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.drop-area.active {
+  border-color: #4CAF50;
+  background-color: #f0fff4;
+}
+
+.drop-area i {
+  font-size: 48px;
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-info {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.log-actions {
+  display: flex;
+  gap: 8px;
+}
+
+#logOutput {
+  flex-grow: 1;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 15px;
+  border-radius: 4px;
+  overflow: auto;
+  font-family: monospace;
+  white-space: pre-wrap;
+  margin-top: 10px;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background: #ccc;
+}
+
+.status-indicator.active {
+  background: #4CAF50;
+}
+
+.clear-btn {
+  background: #f44336;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.clear-btn:hover {
+  background: #d32f2f;
+}
+
+.download-btn {
+  background: #2196F3;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.download-btn.active {
+  background: #4CAF50;
+}
+
+.download-btn:hover:not(:disabled) {
+  background: #0b7dda;
+}
+
+.download-btn.active:hover {
+  background: #45a049;
+}

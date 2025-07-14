@@ -1,55 +1,46 @@
-<!-- frontend/templates/form.html -->
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OCR в реальном времени</title>
-  <link rel="stylesheet" href="static/style.css">
+  <title>Обработка ZIP-архивов</title>
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Обработка ZIP-архивов</h1>
-    <form id="zipForm">
-      <label for="zip_path">Путь к ZIP-файлу:</label>
-      <input type="text" id="zip_path" name="zip_path" required>
-      <button type="submit">Запустить</button>
-    </form>
+    <!-- Левая панель - Загрузка файлов -->
+    <div class="panel left-panel">
+      <h1>Загрузка ZIP-архива</h1>
 
-    <h2>Лог:</h2>
-    <pre id="logOutput"></pre>
+      <div id="dropArea" class="drop-area">
+        <i>📁</i>
+        <h3>Перетащите ZIP-файл сюда</h3>
+        <p>или</p>
+        <button id="browseBtn">Выберите файл</button>
+        <input type="file" id="fileInput" class="file-input" accept=".zip">
+      </div>
+
+      <div id="fileInfo" class="file-info">Файл не выбран</div>
+
+      <button id="processBtn" disabled>Запустить обработку</button>
+    </div>
+
+    <!-- Правая панель - Логи -->
+    <div class="panel right-panel">
+      <div class="log-header">
+        <h2>
+          <span class="status-indicator"></span>
+          Лог обработки
+        </h2>
+        <div class="log-actions">
+          <button class="clear-btn" id="clearLogBtn">Очистить</button>
+          <button id="downloadBtn" class="download-btn" disabled>
+            Скачать Excel
+          </button>
+        </div>
+      </div>
+      <pre id="logOutput"></pre>
+    </div>
   </div>
 
-  <script>
-    const logOutput = document.getElementById('logOutput');
-    const form = document.getElementById('zipForm');
-
-    let source;  // здесь будет EventSource
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      // если уже есть старый SSE — закрываем его
-      if (source) {
-        source.close();
-        logOutput.textContent = '';
-      }
-
-      // открываем SSE-поток _до_ fetch
-      source = new EventSource('/logs');
-      source.onmessage = (evt) => {
-        logOutput.textContent += evt.data + "\n";
-        // если нужно, можно detect "Обработка завершена" и закрыть SSE:
-        if (evt.data.includes("Обработка завершена")) {
-          source.close();
-        }
-      };
-
-      // только после этого шлём ZIP-путь
-      const formData = new URLSearchParams(new FormData(form));
-      await fetch('/process', {
-        method: 'POST',
-        body: formData
-      });
-    });
-  </script>
+  <script src="/static/js/script.js"></script>
 </body>
 </html>
